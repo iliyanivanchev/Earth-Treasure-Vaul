@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { isAuth } = require('../middlewares/authMiddlewares');
 const stonesService = require('../services/stonesService');
 
 router.get('/', async (req, res) => {
@@ -8,13 +9,13 @@ router.get('/', async (req, res) => {
     res.render('home', { latestThree });
 });
 
-router.get('/search', async (req, res) => {
-    const {name } = req.query;
+router.get('/search', isAuth, async (req, res) => {
+    const { name } = req.query;
 
     try {
-    const stones = await stonesService.search(name).lean();
+        const stones = await stonesService.search(name).lean();
 
-    res.render('search', { stones });
+        res.render('search', { stones: [] });
     } catch (err) {
         res.render('search', { error: getErrorMessage(err) });
 
